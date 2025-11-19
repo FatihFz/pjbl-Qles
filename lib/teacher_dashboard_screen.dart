@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'join_class_modal.dart';
-import 'class_modal.dart';
+import 'edit_profile_screen.dart';
 import 'profile_model.dart';
+import 'add_class_modal.dart';
+import 'class_modal.dart';
+import 'class_details_screen.dart';
 
-class StudentDashboardScreen extends StatelessWidget {
-  const StudentDashboardScreen({super.key});
+class TeacherDashboardScreen extends StatelessWidget {
+  const TeacherDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +22,22 @@ class StudentDashboardScreen extends StatelessWidget {
               children: [
                 Text('Hello, ${profileModel.name}'),
                 Text(
-                  'Student Dashboard',
+                  'Teacher Dashboard',
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.person_outline),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EditProfileScreen()),
+                  );
+                },
+              ),
+            ],
           ),
           body: Padding(
             padding: const EdgeInsets.all(20.0),
@@ -43,10 +56,10 @@ class StudentDashboardScreen extends StatelessWidget {
                         showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
-                          builder: (context) => const JoinClassModal(),
+                          builder: (context) => const AddClassModal(),
                         );
                       },
-                      backgroundColor: Colors.green,
+                      backgroundColor: Colors.indigo,
                       child: const Icon(Icons.add, color: Colors.white),
                     ),
                   ],
@@ -70,7 +83,7 @@ class StudentDashboardScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Join a class using the code from your teacher',
+                                'Create your first class to start teaching',
                                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                               ),
                             ],
@@ -87,14 +100,34 @@ class StudentDashboardScreen extends StatelessWidget {
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  backgroundColor: Colors.green[100],
+                                  backgroundColor: Colors.indigo[100],
                                   child: Icon(
                                     Icons.menu_book_outlined,
-                                    color: Colors.green[800],
+                                    color: Colors.indigo[800],
                                   ),
                                 ),
                                 title: Text(classData.name),
-                                subtitle: Text('Code: ${classData.code}'),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Code: ${classData.code}'),
+                                    Text(
+                                      '${classData.questionCount} questions',
+                                      style: const TextStyle(color: Colors.indigo),
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ClassDetailsScreen(
+                                        className: classData.name,
+                                        classCode: classData.code,
+                                      ),
+                                    ),
+                                  );
+                                },
                               ),
                             );
                           },

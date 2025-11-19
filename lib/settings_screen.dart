@@ -95,8 +95,8 @@ class SettingsScreen extends StatelessWidget {
                 const SnackBar(content: Text('You have been logged out')),
               );
 
-              // Reset profil ke nilai default (opsional)
-              Provider.of<ProfileModel>(context, listen: false).reset();
+              // Reset profil ke nilai default menggunakan method yang benar
+              Provider.of<ProfileModel>(context, listen: false).clearProfile(); // <-- Perubahan di sini
 
               // Kembalikan ke LoginScreen dan hapus semua history sebelumnya
               Navigator.pushAndRemoveUntil(

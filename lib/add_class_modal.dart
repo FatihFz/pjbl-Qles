@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'class_modal.dart';
-import 'profile_model.dart';
+import 'profile_model.dart'; // Import ProfileModel
 
-class JoinClassModal extends StatefulWidget {
-  const JoinClassModal({super.key});
+// Jangan import class_modal.dart jika Anda sudah mendefinisikan ClassModel di profile_model.dart
+// Jika Anda ingin pisahkan model, pastikan class_modal.dart hanya berisi ClassModel
+
+class AddClassModal extends StatefulWidget {
+  const AddClassModal({super.key});
 
   @override
-  State<JoinClassModal> createState() => _JoinClassModalState();
+  State<AddClassModal> createState() => _AddClassModalState();
 }
 
-class _JoinClassModalState extends State<JoinClassModal> {
-  final TextEditingController _classCodeController = TextEditingController();
+class _AddClassModalState extends State<AddClassModal> {
+  final TextEditingController _classNameController = TextEditingController();
 
   @override
   void dispose() {
-    _classCodeController.dispose();
+    _classNameController.dispose();
     super.dispose();
   }
 
@@ -36,7 +38,7 @@ class _JoinClassModalState extends State<JoinClassModal> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                'Join Class',
+                'Add New Class',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               IconButton(
@@ -49,9 +51,9 @@ class _JoinClassModalState extends State<JoinClassModal> {
           ),
           const SizedBox(height: 20),
           TextField(
-            controller: _classCodeController,
+            controller: _classNameController,
             decoration: InputDecoration(
-              labelText: 'Enter class code',
+              labelText: 'Enter class name',
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               filled: true,
               fillColor: Colors.white,
@@ -63,27 +65,28 @@ class _JoinClassModalState extends State<JoinClassModal> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: () {
-                if (_classCodeController.text.isNotEmpty) {
-                  final className = 'Class ${_classCodeController.text}';
+                if (_classNameController.text.isNotEmpty) {
+                  final code = _generateRandomCode();
+                  // Pastikan ClassModel didefinisikan di profile_model.dart
                   final newClass = ClassModel(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    name: className,
-                    code: _classCodeController.text,
+                    name: _classNameController.text.trim(),
+                    code: code,
                     questionCount: 0,
                   );
                   profileModel.addClass(newClass);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Joined class: $className')),
+                    SnackBar(content: Text('Class "${newClass.name}" created')),
                   );
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please enter a class code')),
+                    const SnackBar(content: Text('Please enter a class name')),
                   );
                 }
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: Colors.indigo,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -91,7 +94,7 @@ class _JoinClassModalState extends State<JoinClassModal> {
                 ),
               ),
               child: const Text(
-                'Join',
+                'Add',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -100,5 +103,35 @@ class _JoinClassModalState extends State<JoinClassModal> {
         ],
       ),
     );
+  }
+
+  String _generateRandomCode() {
+    final characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    String result = '';
+    for (int i = 0; i < 6; i++) {
+      result += characters[DateTime.now().millisecondsSinceEpoch % characters.length];
+    }
+    return result;
+  }
+}
+
+class ClassModel {
+  final String id;
+  final String name;
+  final String code;
+  final int questionCount;
+
+  ClassModel({
+    required this.id,
+    required this.name,
+    required this.code,
+    this.questionCount = 0,
+  });
+
+  static List<ClassModel> getDemoClasses() {
+    return [
+      ClassModel(id: '1', name: 'Class 10A', code: 'ABC123', questionCount: 0),
+      ClassModel(id: '2', name: 'Class 11B', code: 'XYZ789', questionCount: 0),
+    ];
   }
 }

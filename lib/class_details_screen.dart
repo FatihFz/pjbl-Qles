@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'profile_model.dart';
 
 class ClassDetailsScreen extends StatelessWidget {
   final String className;
@@ -31,9 +29,33 @@ class ClassDetailsScreen extends StatelessWidget {
               // Informasi kelas
               Text(
                 'Class Code: $classCode',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+              ),
+              const SizedBox(height: 30),
+
+              // Tombol "+ Add Question"
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    print('Add Question button pressed for class: $className');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Add question for $className')),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.add),
+                  label: const Text(
+                    '+ Add Question',
+                    style: TextStyle(fontSize: 16),
+                  ),
                 ),
               ),
               const SizedBox(height: 30),
@@ -44,8 +66,9 @@ class ClassDetailsScreen extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // Ganti Icons.question_mark dengan ikon yang valid
                       Icon(
-                        Icons.question_mark,
+                        Icons.question_answer, // ✅ Ikon yang valid
                         size: 60,
                         color: Colors.grey[400],
                       ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart'; // Import provider
+import 'package:provider/provider.dart';
 import 'register_screen.dart';
-import 'student_dashboard_screen.dart'; // Ganti 'student_dashboard_screen.dart' menjadi 'student_dashboard.dart'
-import 'settings_screen.dart';   // Import settings
-import 'edit_profile_screen.dart'; // Import edit profile
-import 'profile_model.dart'; // Import model
+import 'student_dashboard_screen.dart';
+import 'teacher_dashboard_screen.dart';
+import 'settings_screen.dart';
+import 'edit_profile_screen.dart';
+import 'profile_model.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => ProfileModel(), // Inisialisasi model di sini
+      create: (context) => ProfileModel(),
       child: MaterialApp(
         title: 'Classroom App',
         debugShowCheckedModeBanner: false,
@@ -30,12 +31,11 @@ class MyApp extends StatelessWidget {
             elevation: 0,
           ),
         ),
-        initialRoute: '/', // Default route
+        initialRoute: '/',
         routes: {
           '/': (context) => const LoginScreen(),
-          '/login': (context) => const LoginScreen(), // Untuk logout
+          '/login': (context) => const LoginScreen(),
         },
-        // home: const LoginScreen(), // <-- Baris ini dihapus untuk menghindari konflik
       ),
     );
   }
@@ -62,6 +62,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final profileModel = Provider.of<ProfileModel>(context, listen: false);
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -95,7 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 40),
                 _buildLoginForm(),
                 const SizedBox(height: 30),
-                _buildLoginButton(),
+                _buildLoginButton(profileModel),
+                const SizedBox(height: 20),
+                _buildGoogleLoginButton(profileModel),
                 const SizedBox(height: 20),
                 _buildRegisterLink(),
                 const SizedBox(height: 40),
@@ -213,18 +217,19 @@ class _LoginScreenState extends State<LoginScreen> {
           );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildLoginButton(ProfileModel profileModel) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          print('Email: ${_emailController.text}');
-          print('Password: ${_passwordController.text}');
-          print('Role: $_selectedRole');
-
           if (_emailController.text == 'student@demo.com' &&
               _passwordController.text == 'student123' &&
               _selectedRole == 'Student') {
+            profileModel.setProfile(
+              name: 'Student Demo',
+              email: 'student@demo.com',
+              role: 'Student',
+            );
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const StudentDashboardScreen()),
@@ -232,8 +237,14 @@ class _LoginScreenState extends State<LoginScreen> {
           } else if (_emailController.text == 'teacher@demo.com' &&
               _passwordController.text == 'teacher123' &&
               _selectedRole == 'Teacher') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Teacher login successful!')),
+            profileModel.setProfile(
+              name: 'Teacher Demo',
+              email: 'teacher@demo.com',
+              role: 'Teacher',
+            );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const TeacherDashboardScreen()),
             );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -257,6 +268,37 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  Widget _buildGoogleLoginButton(ProfileModel profileModel) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: () async {
+          print('Login with Google clicked');
+          profileModel.setProfile(
+            name: 'Google User Demo',
+            email: 'googleuser@demo.com',
+            role: 'Student',
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const StudentDashboardScreen()),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Colors.grey.shade300),
+          ),
+        ),
+        icon: Icon(Icons.g_mobiledata, color: Colors.blue),
+        label: const Text('Continue with Google'),
+      ),
+    );
+  }
+
   Widget _buildRegisterLink() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -272,11 +314,6 @@ class _LoginScreenState extends State<LoginScreen> {
               MaterialPageRoute(builder: (context) => const RegisterScreen()),
             );
           },
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            minimumSize: const Size(50, 30),
-            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          ),
           child: Text(
             'Register',
             style: TextStyle(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'student_dashboard_screen.dart'; // Import dashboard siswa
+import 'teacher_dashboard_screen.dart'; // Import dashboard guru
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -208,6 +210,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
           print('Email: ${_emailController.text}');
           print('Password: ${_passwordController.text}');
           print('Role: $_selectedRole');
+
+          if (_nameController.text.isNotEmpty &&
+              _emailController.text.isNotEmpty &&
+              _passwordController.text.isNotEmpty) {
+            // Simulasikan registrasi berhasil
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Account created as ${_selectedRole}')),
+            );
+
+            // Navigasi ke dashboard sesuai role
+            if (_selectedRole == 'Student') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const StudentDashboardScreen()),
+              );
+            } else if (_selectedRole == 'Teacher') {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const TeacherDashboardScreen()),
+              );
+            }
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please fill all fields')),
+            );
+          }
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.deepPurple.shade400,
